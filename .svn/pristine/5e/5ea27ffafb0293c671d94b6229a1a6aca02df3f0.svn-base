@@ -1,0 +1,163 @@
+<%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="css/reset.css" />
+		<style type="text/css">
+			.sub-content{
+				width: 95%;
+				height: 100%;
+			    margin: 30px auto 0 auto;
+			    background: #fff;
+			    padding-left: 20px;
+			}
+			.sub-content .title{
+			    margin: 4px 20px;
+			    padding-top: 15px;
+			    padding-left: 20px;
+			    padding-bottom: 10px;
+			    border-bottom: 1px solid #d3d3d3;
+			    font-size: 18px;
+			    color: #007bc4;
+			}
+			div.sub-content h4 {
+				text-align: center;
+				padding-left: 20px;
+			}
+			.sub-content form h5{
+				display: block;
+			    font-weight: normal;
+			    font-size: 16px;
+			    color: #454545;
+			    padding: 20px 0 10px;
+			}
+			.sub-content form div input{
+				width: 60%;
+			    border: 1px solid #d8d8d8;
+			    padding: 10px 10px;
+			    height: 17px;
+			}
+			.sub-content form div.goods-pic, .sub-content form div.goods-img{
+				display: inline-block;
+			    border: 1px solid #d8d8d8;
+			    padding: 2px;
+			    width: 217px;
+			    height: 150px;
+			    overflow: hidden;
+			    position: relative;
+			}
+			.sub-content form div.goods-pic, .sub-content form div.goods-img img{
+				height: 150px;
+			}
+			.sub-content form div.goods-pic{
+				background: url(img/img-goods-default.jpg) 2px 2px no-repeat #fff;
+			}
+			.sub-content form div.goods-pic input{
+				opacity: 0;
+			    background: #313541;
+			    width: 109px;
+			    height: 31px;
+			    line-height: 31px;
+			    color: #fff;
+			    position: absolute;
+			    left: 50%;
+			    margin-left: -54px;
+			    top: 50%;
+			    margin-top: -15px;
+			    z-index: 9;
+			    cursor: pointer;
+			}
+			.sub-content form div.goods-pic a{
+				display: block;
+				text-align: center;
+			    position: absolute;
+			    background: #313541;
+			    width: 109px;
+			    height: 31px;
+			    line-height: 31px;
+			    color: #fff;
+			    border-radius: 2px;
+			    position: absolute;
+			    left: 50%;
+			    margin-left: -54px;
+			    top: 50%;
+			    margin-top: -15px;
+			    z-index: 3;
+			    cursor: pointer;
+			}
+			.sub-content form div textarea{
+				width: 60%;
+			    border: 1px solid #d8d8d8;
+			    padding: 5px 10px;
+			    height: 80px;
+			}
+
+			.sub-content form div input.submit{
+				margin-top: 60px;
+				margin-bottom: 60px;
+			    width: 117px;
+			    height: 42px;
+			    background: #00843e;
+			    color: #fff;
+			    font-size: 16px;
+			}
+			.sub-content form div input.submit:hover { background: #0CCEA2;}
+		</style>
+	</head>
+	<body>
+		<div class="sub-content">
+			<h2 class="title">修改商品</h2>
+			<h4>${tip }</h4>
+			<s:form action="adminUpdateGoods" enctype="multipart/form-data">
+				<h5>商品ID</h5>
+				<div>
+					<s:textfield name="goods.id" value="%{#request.goods.id}" disabled="disabled" />
+				</div>
+				<h5>商品名称</h5>
+				<div>
+					<s:textfield name="goods.name" value="%{#request.goods.name}" />
+				</div>
+				<h5>商品价格</h5>
+				<div>
+					<s:textfield name="goods.price" value="%{#request.goods.price}" />
+				</div>
+				<h5>商品单位</h5>
+				<div class="select">
+					<s:select list="#{'件':'件','个':'个'}" name="goods.units">
+					</s:select>
+				</div>
+				<h5>商品库存</h5>
+				<div>
+					<s:textfield name="goods.stock" value="%{#request.goods.stock}" />
+				</div>
+				<h5>商品类型</h5>
+				<div>
+					<s:select list="#{'1':'默认','2':'其他'}" name="goods.type">
+					</s:select>
+				</div>
+				<h5>商品图片</h5>
+				<div>
+					<div class="goods-pic">
+						<s:file name="file" />
+						<a href="">更改图片</a>
+					</div>
+					<div class="goods-img">
+						<img alt="" src="${requestScope.goods.path }">
+					</div>
+				</div>
+				<h5>商品描述</h5>
+				<div>
+					<s:textarea name="goods.desc" value="%{#request.goods.desc}" cols="3" />
+				</div>
+				<div>
+					<s:submit value="添加" class="submit" />
+				</div>
+			</s:form>
+		</div>
+	</body>
+</html>
+

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    
+    <package name="lht" extends="json-default" namespace="/scm">
+    	<interceptors>
+    		<interceptor name="userSession" class="cn.enterprise.interceptor.UserSessionInterceptor"></interceptor>
+    	</interceptors>
+    	<global-results>
+    		<result type="redirect" name="login">/login.jsp</result>
+    	</global-results>
+    	<action name="addToCart" class="shoppingCartAction" method="addToCart">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">getCartOrders</result>
+    	</action>
+    	<action name="getCartOrders" class="shoppingCartAction" method="toCartOrders">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/scm/lookShoppingCart.jsp</result>
+    	</action>
+    	<action name="updateCartOrders" class="shoppingCartAction" method="updateCartOrders">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/scm/lookShoppingCart.jsp</result>
+    	</action>
+    	<action name="deleteCartOrders" class="shoppingCartAction" method="deleteCartOrders">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">getCartOrders</result>
+    	</action>      
+    	
+    	<!-- 修改购物车数量 -->
+    	<action name="editCartOrders" class="shoppingCartAction" method="update">
+    		<result type="json">
+    		</result>
+    	</action>
+    	
+    	<!-- 结算 -->
+    	<action name="winpUpCart" class="shoppingCartAction" method="winpUpCart">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">
+    			<param name="actionName">getCartOrders</param>
+    			<param name="tip">${tip}</param>
+    		</result>
+    	</action> 	
+    </package>
+    
+</struts>

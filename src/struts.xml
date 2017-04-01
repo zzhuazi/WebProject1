@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    
+    <!-- 配置后缀名 -->
+    <constant name="struts.action.extension" value=",action"/>
+    <!-- 配置主题 -->
+    <constant name="struts.ui.theme" value="simple"/>
+    
+    <include file="struts-BSM.xml"></include>
+    <include file="struts-OM.xml"></include>
+    <include file="struts-SCM.xml"></include>
+    <include file="struts-UIM.xml"></include>
+    <package name="default" extends="struts-default">
+    	<action name="lookGoods" class="goodsAction">
+    		<result>/WEB-INF/lookGoods.jsp</result>
+    	</action>
+    </package>
+</struts>

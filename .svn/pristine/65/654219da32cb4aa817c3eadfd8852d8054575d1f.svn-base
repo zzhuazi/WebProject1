@@ -1,0 +1,358 @@
+package cn.enterprise.dao;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import cn.enterprise.po.Address;
+import cn.enterprise.po.Goods;
+import cn.enterprise.po.Orders;
+import cn.enterprise.po.User;
+import cn.enterprise.util.OrderNumUtil;
+
+@Repository("userDao")
+public class UserDaoImpl implements UserDao {
+
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	/**
+	 * 新增一个User
+	 */
+	@Override
+	public void add(User user) {
+		Session session = sessionFactory.getCurrentSession();
+		session.save(user);
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getAll() {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user";
+		Query query = session.createSQLQuery(sql).addEntity(User.class);
+		List<User> list = query.list();
+		return list;
+	}
+
+	@Override
+	public User get(int id) {
+		Session session = sessionFactory.getCurrentSession();
+		return (User) session.load(User.class, id);
+	}
+
+	@Override
+	public String getPwd(String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select pwd from user where email=?";
+		Query query = session.createSQLQuery(sql);
+		query.setString(0, email);
+		return (String) query.uniqueResult();
+	}
+
+	@Override
+	public void update(User user) throws HibernateException {
+		Session session = sessionFactory.getCurrentSession();
+		User u = (User) session.get(User.class, user.getId());
+		if (!(null == user.getPwd() || "".equals(user.getPwd()))) {
+			u.setPwd(user.getPwd());
+		}
+		u.setName(user.getName());
+		u.setEmail(user.getEmail());
+		u.setBalance(user.getBalance());
+		session.update(u);
+		session.flush();
+	}
+
+	@Override
+	public User get(String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		Query query = session.createSQLQuery(sql).addEntity(User.class);
+		query.setString(0, email);
+		return (User) query.uniqueResult();
+	}
+
+	@Override
+	public int addOrder(Orders order) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User user = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, order.getUser().getEmail()).uniqueResult();
+		user.addOrder(order);
+		sql = "select * from goods where id = ?";
+		Goods goods = (Goods) session.createSQLQuery(sql).addEntity(Goods.class).setInteger(0, order.getGoods().getId()).uniqueResult();
+		goods.addOrder(order);
+
+		session.save(order);
+		session.flush();
+		return 1;
+	}
+
+	@Override
+	public int addAddress(Address address) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User user = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, address.getUser().getEmail()).uniqueResult();
+		//修改优先级
+		if (address.getPriority() == 1) {
+			Iterator<Address> iterator = user.getAddresses().iterator();
+			while (iterator.hasNext()) {
+				iterator.next().setPriority(0);
+			}
+		}
+		user.addAddress(address);
+		session.update(user);
+		return 1;
+	}
+
+	@Override
+	public Iterator<Address> getAllAddress(String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User user = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, email).uniqueResult();
+		Set<Address> addresses = user.getAddresses();
+		if (null != addresses) {
+			return addresses.iterator();
+		}
+		return null;
+	}
+
+	@Override
+	public Address getAddress(String email, int addressId) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from address where id = ?";
+		Address address = (Address) session.createSQLQuery(sql).addEntity(Address.class).setInteger(0, addressId).uniqueResult();
+		if (address.getUser().getEmail().equals(email)) {
+			return address;
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterator<Orders> getAllOrders(int status, String email) {
+		System.out.println(email);
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User user = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, email).uniqueResult();
+		sql = "select * from orders where uid=? and status = ?";
+		List<Orders> list = session.createSQLQuery(sql).addEntity(Orders.class).setInteger(0, user.getId()).setInteger(1, 1).list();
+		session.flush();
+		return list.iterator();
+	}
+
+	@Override
+	public void updateAddress(Address address, String email) {
+		Session session = sessionFactory.getCurrentSession();
+		Address addr = (Address) session.get(Address.class, address.getId());
+		if (addr.getUser().getEmail().equals(email)) {
+			if (address.getPriority() == 1) {
+				Iterator<Address> iterator = addr.getUser().getAddresses().iterator();
+				while (iterator.hasNext()) {
+					iterator.next().setPriority(0);
+				}
+			}
+			addr.setName(address.getName());
+			addr.setPhone(address.getPhone());
+			addr.setAddress(address.getAddress());
+			addr.setPriority(address.getPriority());
+			session.update(addr);
+		}
+	}
+
+	@Override
+	public void deleteAddress(int addressId, String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from address where id = ?";
+		Address address = (Address) session.createSQLQuery(sql).addEntity(Address.class).setInteger(0, addressId).uniqueResult();
+		if (address.getUser().getEmail().equals(email)) {
+			session.delete(address);
+			session.flush();
+			sql = "select * from user where email = ?";
+			User user = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, email).uniqueResult();
+			Iterator<Address> iterator = user.getAddresses().iterator();
+			if (iterator.hasNext()) {
+				iterator.next().setPriority(1);
+			}
+			session.update(user);
+		}
+	}
+
+	@Override
+	public void updateOrders(Orders order, String email) {
+		
+	}
+
+	@Override
+	public void updateShoppingCart(String email, int number, int status, int oid) {
+		
+	}
+
+
+	@Override
+	public User getInfo(String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email=?";
+		User user = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, email).uniqueResult();
+		return user;
+	}
+
+	@Override
+	public int updateInfo(User user) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User u = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, user.getEmail()).uniqueResult();
+		u.setName(user.getName());
+		return 1;
+	}
+
+	@Override
+	public int winpUpCart(int oid, String email) {
+		Session session = sessionFactory.getCurrentSession();
+		
+		//1.判断购物车是否属于该用户
+		String sql = "select * from orders where  id = ?";
+		Orders order =  (Orders) session.createSQLQuery(sql).addEntity(Orders.class).setInteger(0, oid).uniqueResult();
+		if (!order.getUser().getEmail().equals(email)) {
+			return 0;
+		}
+		//判断是否有默认收货地址
+		if (order.getUser().getAddresses().isEmpty()) {
+			return 2;
+		}
+		//2.判断商品库存是否充足
+		if (order.getNumber() > order.getGoods().getStock()) {
+			return 3;
+		}
+		//3.判断余额是否充足
+		double total = order.getNumber() * order.getGoods().getPrice();
+		if (total > order.getUser().getBalance()) {
+			return 4;
+		} else {
+			order.getUser().setBalance(order.getUser().getBalance() - total);
+		}
+		//4.更改订单状态为已付款待发货状态
+		order.setStatus(4);
+		session.update(order);
+		session.flush();
+		return 1;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterator<Orders> getOrders(int type, String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User u = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, email).uniqueResult();
+		switch (type) {
+			case 0:		//全部
+				sql = "select * from orders where status != 1 and status != 3 and uid = " + u.getId();
+				break;
+			case 1:		//待付款
+				sql = "select * from orders where status = 2 and uid = " + u.getId();
+				break;
+			case 2:		//待发货
+				sql = "select * from orders where status = 4 and uid = " + u.getId();
+				break;
+			case 3:		//待收货
+				sql = "select * from orders where status = 7 and uid = " + u.getId();
+				break;
+			case 4:		//待评价
+				sql = "select * from orders where status = 10 and uid = " + u.getId();
+				break;
+			default:
+				break;
+		}
+		return session.createSQLQuery(sql).addEntity(Orders.class).list().iterator();
+	}
+
+	@Override
+	public Address getDefaultAddress(String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User u = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, email).uniqueResult();
+		Iterator<Address> iterator = u.getAddresses().iterator();
+		Address address = null;
+		while (iterator.hasNext()) {
+			Address a = iterator.next();
+			if (a.getPriority() == 1) {
+				address = a;
+			}
+		}
+		return address;
+	}
+
+	@Override
+	public int payOrder(int oid, String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from orders where id = ?";
+		Orders order = (Orders) session.createSQLQuery(sql).addEntity(Orders.class).setInteger(0, oid).uniqueResult();
+		if (!order.getUser().getEmail().equals(email)) {
+			//系统错误
+			return 0;
+		}
+		if (order.getNumber() > order.getGoods().getStock()) {
+			return 4;
+		}
+		if ((order.getGoods().getPrice() * order.getNumber()) > order.getUser().getBalance()) {
+			//余额不足
+			return 2;
+		}
+		if (order.getUser().getAddresses().isEmpty()) {
+			//没有收货地址
+			return 3;
+		}
+		order.setStatus(4);
+		order.getUser().setBalance(order.getUser().getBalance() - (order.getNumber() * order.getGoods().getPrice()));
+		order.getGoods().setStock(order.getGoods().getStock() - order.getNumber());
+		session.update(order);
+		session.flush();
+		return 1;
+	}
+
+	@Override
+	public int resetPwd(String oPwd, String nPwd, String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User u = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, email).uniqueResult();
+		if (u.getPwd().equals(oPwd)) {
+			u.setPwd(nPwd);
+			session.update(u);
+			session.flush();
+			return 1;
+		} 
+		return 0;
+	}
+
+	@Override
+	public int directPay(int gid, String email) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from user where email = ?";
+		User u = (User) session.createSQLQuery(sql).addEntity(User.class).setString(0, email).uniqueResult();
+		sql = "select * from goods where id = ?";
+		Goods goods = (Goods) session.createSQLQuery(sql).addEntity(Goods.class).setInteger(0, gid).uniqueResult();
+		Orders orders = new Orders();
+		orders.setGoods(goods);
+		orders.setModTime(new Date());
+		orders.setNo(OrderNumUtil.getNum(u.getId(), goods.getId()));
+		orders.setNumber(1);
+		orders.setStatus(2);
+		orders.setUser(u);
+		session.save(orders);
+		session.flush();
+		return 1;
+	}
+	
+}

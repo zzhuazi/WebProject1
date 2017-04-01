@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2016-11-27 18:39:23 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="cn.enterprise.po.User" table="user">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="increment" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="name" />
+        </property>
+        <property name="pwd" type="java.lang.String">
+            <column name="pwd" />
+        </property>
+        <property name="balance" type="double">
+            <column name="balance" />
+        </property>
+        <property name="email" type="java.lang.String">
+            <column name="email" />
+        </property>
+        <property name="regTime" type="java.util.Date">
+            <column name="regTime" />
+        </property>
+        <set name="addresses" table="address" inverse="true" lazy="extra" cascade="all">
+            <key>
+                <column name="uid" />
+            </key>
+            <one-to-many class="cn.enterprise.po.Address" />
+        </set>
+        <set name="orders" table="orders" inverse="true" fetch="join" lazy="extra" cascade="all">
+            <key>
+                <column name="uid" />
+            </key>
+            <one-to-many class="cn.enterprise.po.Orders" />
+        </set>
+        <set name="runningAccounts" table="runningAccounts" inverse="true" lazy="extra" cascade="all">
+            <key>
+                <column name="uid" />
+            </key>
+            <one-to-many class="cn.enterprise.po.RunningAccount" />
+        </set>
+        <set name="comments" table="comments" inverse="true" lazy="extra" cascade="all">
+            <key>
+                <column name="uid" />
+            </key>
+            <one-to-many class="cn.enterprise.po.Comment" />
+        </set>
+    </class>
+</hibernate-mapping>

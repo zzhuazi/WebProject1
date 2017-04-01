@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2016-11-27 18:39:23 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="cn.enterprise.po.Goods" table="goods">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="increment" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="name" />
+        </property>
+        <property name="desc" type="java.lang.String">
+            <column name="descr" />
+        </property>
+        <property name="price" type="double">
+            <column name="price" />
+        </property>
+        <property name="units" type="java.lang.String">
+            <column name="units" />
+        </property>
+        <property name="stock" type="int">
+            <column name="stock" />
+        </property>
+        <property name="path" type="java.lang.String">
+            <column name="path" />
+        </property>
+        <property name="type" type="int">
+            <column name="type" />
+        </property>
+        <set name="orders" table="orders" inverse="true" cascade="all" lazy="extra" fetch="select">
+            <key>
+                <column name="gid" />
+            </key>
+            <one-to-many class="cn.enterprise.po.Orders" />
+        </set>
+    </class>
+</hibernate-mapping>

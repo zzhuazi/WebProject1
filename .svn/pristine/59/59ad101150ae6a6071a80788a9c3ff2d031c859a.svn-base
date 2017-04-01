@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    <package name="xmy" extends="struts-default">
+    	
+    	<interceptors>
+    		<interceptor name="adminSession" class="cn.enterprise.interceptor.AdminSessionInterceptor"/>
+    	</interceptors>
+		<global-results>
+    		<result name="login" type="redirect">/adminRefreshParent.jsp</result>
+    		<result name="invalid.token">/invalidToken.jsp</result>
+    	</global-results>
+    	
+    	<!-- 登录 -->
+    	<action name="adminLogin" class="adminAction" method="login">
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">adminIndex</result>
+    		<result name="login" type="redirect">/adminLogin.jsp</result>
+    	</action>
+    	<!-- 注销 -->
+    	<action name="adminLogout" class="adminAction" method="logout">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result name="login" type="redirect">/adminLogin.jsp</result>
+    	</action>
+    	<!-- 后台管理首页 -->
+		<action name="adminIndex" class="adminAction" method="index">
+			<interceptor-ref name="adminSession"/>
+			<result>/WEB-INF/admin/index.jsp</result>
+		</action>
+		<!-- 跳转到查找用户页面 -->
+		<action name="adminToLookUser" class="adminAction" method="toLookUser">
+			<interceptor-ref name="adminSession"/>
+			<result>/WEB-INF/admin/lookUser.jsp</result>
+		</action>
+    	<!-- 新增一个用户 -->
+    	<action name="adminAddUser" class="adminAction" method="addUser">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">adminToAddUser</result>
+    	</action>
+    	<!-- 跳转到新增用户页面 -->
+    	<action name="adminToAddUser" class="adminAction" method="toAddUser">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/addUser.jsp</result>
+    	</action>
+    	<!-- 更新用户信息 -->
+    	<action name="adminUpdateUser" class="adminAction" method="updateUser">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">adminToLookUser</result>
+    	</action>
+    	<!-- 跳转到更新用户信息页面 -->
+    	<action name="adminToUpdateUser" class="adminAction" method="toUpdateUser">
+    		<interceptor-ref name="adminSession"></interceptor-ref>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/editUser.jsp</result>
+    	</action>
+    	<!-- 添加商品 -->
+		<action name="adminAddGoods" class="adminAction" method="addGoods">
+			<interceptor-ref name="adminSession"/>
+			<interceptor-ref name="token"/>
+			<interceptor-ref name="defaultStack"/>
+			<result type="redirectAction">adminToAddGoods</result>
+		</action>
+    	<!-- 跳转到添加商品页面 -->
+    	<action name="adminToAddGoods" class="adminAction" method="toAddGoods">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/addGoods.jsp</result>
+    	</action>
+    	<!-- 跳转到查询商品页面 -->
+    	<action name="adminToLookGoods" class="adminAction" method="toLookGoods">
+    		<result>/WEB-INF/admin/lookGoods.jsp</result>
+    	</action>
+    	<!-- 更新商品信息 -->
+    	<action name="adminUpdateGoods" class="adminAction" method="updateGoods">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">adminToLookGoods</result>
+    	</action>
+    	<!-- 跳转到更新商品信息页面 -->
+    	<action name="adminToUpdateGoods" class="adminAction" method="toUpdateGoods">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/editGoods.jsp</result>
+    	</action>
+    	<!-- 跳转到查看所有订单页面 -->
+    	<action name="adminToLookOrders" class="adminAction" method="toLookOrders">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/lookOrders.jsp</result>
+    	</action>
+    	<!-- 跳转到查看待付款订单页面 -->
+    	<action name="adminToLookBehalfPaymentOrders" class="adminAction" method="behalfPayment">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/lookOrders.jsp</result>
+    	</action>
+    	<!-- 跳转到查看待发货订单页面 -->
+    	<action name="adminToLookBehalfSendGoodsOrders" class="adminAction" method="behalfSendGoods">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/lookOrders.jsp</result>
+    	</action>
+    	<!-- 跳转到查看待收货订单页面 -->
+    	<action name="adminToLookWaitConfirmOrders" class="adminAction" method="waitUserConfirm">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/lookOrders.jsp</result>
+    	</action>
+    	<!-- 跳转到查看申请退货订单页面 -->
+    	<action name="adminToLookApplyForSalesReturnOrders" class="adminAction" method="applyForSalesReturn">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/admin/lookOrders.jsp</result>
+    	</action>
+    	<!-- 处理订单 -->
+    	<action name="adminDealWithOrder" class="adminAction" method="dealWithOrder">
+    		<interceptor-ref name="adminSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">adminToLookOrders</result>
+    	</action>
+    </package>
+</struts>

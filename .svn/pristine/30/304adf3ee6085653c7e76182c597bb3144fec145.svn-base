@@ -1,0 +1,41 @@
+package cn.enterprise.service;
+
+import java.util.Iterator;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.enterprise.dao.UserDao;
+import cn.enterprise.po.Address;
+import cn.enterprise.po.Orders;
+
+@Service("orderService")
+public class OrderServiceImpl implements OrderService {
+	@Autowired
+	private UserDao userDao;
+	
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
+
+	@Override
+	public Iterator<Orders> getOrders(int type, String email) {
+		return userDao.getOrders(type, email);
+	}
+
+	@Override
+	public Address getDefaultAddress(String email) {
+		return userDao.getDefaultAddress(email);
+	}
+
+	@Override
+	public int payOrder(int oid, String email) {
+		return userDao.payOrder(oid, email);
+	}
+
+	@Override
+	public int directPay(int gid, String email) {
+		return userDao.directPay(gid, email);
+	}
+
+}

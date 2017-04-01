@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    
+    <package name="OM" extends="struts-default">
+		    <interceptors>
+    			<interceptor name="userSession" class="cn.enterprise.interceptor.UserSessionInterceptor"></interceptor>
+	    	</interceptors>
+	    	<global-results>
+	    		<result name="login">/login.jsp</result>
+	    	</global-results>	
+	    	<action name="userToLookOrders" class="orderAction" method="lookOrder">
+	    		<interceptor-ref name="userSession"/>
+	    		<interceptor-ref name="defaultStack"/>
+	    		<result>/WEB-INF/orders/lookOrders.jsp</result>
+	    	</action>
+	    	<!-- 付款 -->
+	    	<action name="userPayOrder" class="orderAction" method="payOrder">
+	    		<interceptor-ref name="userSession"/>
+	    		<interceptor-ref name="defaultStack"/>
+	    		<result type="redirectAction">
+	    			<param name="actionName">userToLookOrders</param>
+	    			<param name="tip">${tip}</param>
+	    		</result>
+	    	</action>
+	    	<!-- 直接购买 -->
+	    	<action name="userDirectPay" class="orderAction" method="directPay">
+	    		<interceptor-ref name="userSession"/>
+	    		<interceptor-ref name="defaultStack"/>
+	    		<result type="redirectAction">userToLookOrders</result>
+	    	</action>
+	    	<!-- 确认收货 -->
+	    	<action name="userConfirmOrder" class="orderAction" method="confirm">
+	    		<interceptor-ref name="userSession"/>
+	    		<interceptor-ref name="defaultStack"/>
+	    		<result type="redirectAction">
+	    			<param name="actionName">userToLookOrders</param>
+	    			<param name="tip">${tip}</param>
+	    		</result>
+	    	</action>
+	    	<!-- 申请退货 -->
+	    	<action name="userRefundOrder" class="orderAction" method="refund">
+	    		<interceptor-ref name="userSession"/>
+	    		<interceptor-ref name="defaultStack"/>
+	    		<result type="redirectAction">
+	    			<param name="actionName">userToLookOrders</param>
+	    			<param name="tip">${tip}</param>
+	    		</result>
+	    	</action>
+    </package>
+    
+</struts>

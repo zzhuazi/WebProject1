@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2016-11-27 18:39:23 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="cn.enterprise.po.Comment" table="comment">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="increment" />
+        </id>
+        <many-to-one name="user" class="cn.enterprise.po.User" fetch="select" lazy="proxy">
+            <column name="uid" />
+        </many-to-one>
+        <many-to-one name="orders" class="cn.enterprise.po.Orders" fetch="select" lazy="proxy">
+            <column name="orders" />
+        </many-to-one>
+        <property name="comment" type="java.lang.String">
+            <column name="comment" />
+        </property>
+        <property name="grade" type="int">
+            <column name="grade" />
+        </property>
+        <property name="time" type="java.util.Date">
+            <column name="time" />
+        </property>
+    </class>
+</hibernate-mapping>

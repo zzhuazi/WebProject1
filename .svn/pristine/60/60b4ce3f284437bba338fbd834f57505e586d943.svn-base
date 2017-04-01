@@ -1,0 +1,41 @@
+说明:
+	JDK	1.8
+	Tomcat 8.0*
+
+8:45 2016/11/14				加入Struts2.5-min jar包
+8:46 2016/11/14				加入spring4.3.2jar包
+8:47 2016/11/14				加入hibernate4.2require	jar 包
+8:56 2016/11/14				加入Struts2支持spring 的 struts2-spring-plugin-2.3.4.1.jar
+
+web.xml
+8:50 2016/11/14				配置spring ioc容器监听器
+8:52 2016/11/14				配置Struts2过滤器
+
+测试
+9:23 2016/11/14				struts2 Action已成功由springIOC容器管理
+
+20:33 2016/11/17 			加入c3p0  jar包
+20:35 2016/11/17			配置了Hibernate
+20:59 2016/11/17			加入mysql-jdbc jar 包
+
+21:30 2016/11/17			Struts2、Spring、Hibernate架构环境搭建成功
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

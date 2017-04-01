@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    
+    <package name="ljh" extends="struts-default,json-default">
+    	<interceptors>
+    		<interceptor name="userSession" class="cn.enterprise.interceptor.UserSessionInterceptor"></interceptor>
+    	</interceptors>
+    	<global-results>
+    		<result name="login">/login.jsp</result>
+    		<result name="invalid.token">/invalidToken.jsp</result>
+    	</global-results>
+    	<!-- 登录 -->
+    	<action name="userLogin" class="userAction" method="login">
+    		<!-- Token必加的拦截器及拦截器栈 -->
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">lookGoods</result>
+    		<result name="login">/login.jsp</result>
+    	</action>
+    	<!-- email获取验证码 -->
+    	<action name="userGetCode" class="userAction" method="sendCode">
+    		<result type="json"></result>
+    	</action>
+    	<!-- 注册 -->
+    	<action name="userRegister" class="userAction" method="register">
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/index.jsp</result>
+    		<result name="register">/register.jsp</result>
+    	</action>
+    	<!-- 修改、找回密码获取验证码 -->
+    	<action name="userGetCodeFor" class="userAction" method="sendCodeForResetPwd">
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/login.jsp</result>
+    	</action>
+    	<!-- 修改密码 -->
+    	<action name="userUpdatePwd" class="userAction" method="updatePwd">
+    		<result>/login.jsp</result>
+    	</action>
+    	<!-- 修改密码，上一个action好像没有用到 -->
+    	<action name="userResetPwd" class="userAction" method="resetPwd">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="chain">
+    			<param name="actionName">userToInfo</param>
+    			<param name="tip">${tip}</param>
+    		</result>
+    	</action>
+    	<!-- 登录后跳转到修改密码页面 -->
+    	<action name="userToUpdatePwd">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/pim/resetPwd.jsp</result>
+    	</action>
+    	<!-- 跳转到个人信息管理 -->
+    	<action name="userToInfo" class="userAction" method="toLookInfo">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/pim/lookInfo.jsp</result>
+    	</action>
+    	<!-- 添加地址 -->
+    	<action name="userAddAddress" class="userAction" method="addAddress">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="chain">
+    			<param name="actionName">userToInfo</param>
+    			<param name="tip">${tip}</param>
+    		</result>
+    	</action>
+    	<!-- 跳转到添加地址页面 -->
+    	<action name="userToAddAddress">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/pim/addAddress.jsp</result>
+    	</action>
+    	<!-- 跳转到查看地址页面 -->
+    	<action name="userToLookAddress" class="userAction" method="lookAddress">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/pim/lookAddress.jsp</result>
+    	</action>
+    	<!-- 跳转到修改地址页面 -->
+    	<action name="userToUpdateAddress" class="userAction" method="toUpdateAddress">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/pim/updateAddress.jsp</result>
+    	</action>
+    	<!-- 更新地址 -->
+    	<action name="userUpdateAddress" class="userAction" method="updateAddress">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">userToLookAddress</result>
+    	</action>
+    	<!-- 删除地址 -->
+    	<action name="userDeleteAddress" class="userAction" method="deleteAddress">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">userToLookAddress</result>
+    	</action>
+    	<!-- 跳转到修改个人信息页面 -->
+    	<action name="userToUpdateInfo" class="userAction" method="toUpdateInfo">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result>/WEB-INF/pim/lookAndEditInfo.jsp</result>
+    	</action>
+    	<!-- 修改个人信息 -->
+    	<action name="userUpdateInfo" class="userAction" method="updateInfo">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="token"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="chain">
+    			<param name="actionName">userToInfo</param>
+    			<param name="tip">${tip}</param>
+    		</result>
+    	</action>
+    	<!-- 退出登录 -->
+    	<action name="userLogout" class="userAction" method="logout">
+    		<interceptor-ref name="userSession"/>
+    		<interceptor-ref name="defaultStack"/>
+    		<result type="redirectAction">lookGoods</result>
+    	</action>
+    </package>
+    
+</struts>

@@ -1,0 +1,100 @@
+package cn.enterprise.dao;
+
+import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import cn.enterprise.po.Goods;
+
+@Repository("goodsDao")
+public class GoodsDaoImpl implements GoodsDao {
+
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	/**
+	 * ÃÌº”…Ã∆∑
+	 */
+	@Override
+	public void add(Goods goods) throws HibernateException {
+		sessionFactory.getCurrentSession().save(goods);
+	}
+	
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Goods> getAll() {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "select * from goods";
+		Query query = session.createSQLQuery(sql).addEntity(Goods.class);
+		return query.list();
+	}
+
+	@Override
+	public Goods get(int id) {
+		Session session = sessionFactory.getCurrentSession();
+		return (Goods) session.load(Goods.class, id);
+	}
+
+	@Override
+	public void update(Goods goods) throws HibernateException {
+		Session session = sessionFactory.getCurrentSession();
+		session.update(goods);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Goods> getGoods(int page, String info) {
+		int start = (page - 1) * 12;
+		int end = page * 12;
+		Session session = sessionFactory.getCurrentSession();
+		Query query = null;
+		if (null == info || "".equals(info)) {
+			String sql = "select * from goods limit ?, ?";
+			query = session.createSQLQuery(sql).addEntity(Goods.class);
+			query.setInteger(0, start);
+			query.setInteger(1, end);
+		} else {
+			String sql = "select * from goods where name like ? or descr like ?  limit ?, ?";
+			query = session.createSQLQuery(sql).addEntity(Goods.class);
+			query.setString(0, "%" + info + "%");
+			query.setString(1, "%" + info + "%");
+			query.setInteger(2, start);
+			query.setInteger(3, end);
+		}
+		return query.list();
+	}
+
+	@Override
+	public int getTotalPage(String search) {
+		Session session = sessionFactory.getCurrentSession();
+		String sql = "";
+		String result = "0";
+		if (search == null || "".equals(search)) {
+			sql = "select count(id) from goods";
+			result = session.createSQLQuery(sql).uniqueResult().toString();
+		} else {
+			sql = "select count(id) from goods where name like ? or descr like ?;";
+			result = session.createSQLQuery(sql).setString(0, "%" + search + "%")
+					.setString(1, "%" + search + "%").uniqueResult().toString();
+		}
+		int total = Integer.parseInt(result);
+		if (total == 0) {
+			return 0;
+		}
+		int totalPage = total / 12;
+		if (total % 12 != 0) {
+			totalPage++;
+		}
+		return totalPage;
+	}
+
+}
